@@ -23,7 +23,7 @@ const getBearer = async () => {
 const getProduct = async () => {
   // fetch
   const token = await getBearer()
-  const res = await window.fetch(`${apiURL}/products/1`, {
+  const res = await window.fetch(`${apiURL}/products`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -31,7 +31,14 @@ const getProduct = async () => {
       Authorization: token
     }
   })
-  const data = await res.json()
+
+  let dataArr = await res.json()
+  dataArr = dataArr.filter(prod => {
+    return prod.Active == true
+  })
+
+  const data = dataArr[0]
+
   const prod = {
     title: data.Title,
     liveView: data.liveView,
@@ -39,6 +46,10 @@ const getProduct = async () => {
     descriptions: []
   }
   prod.descriptions.push(data.Description1)
+  prod.descriptions.push(data.Description2)
+  prod.descriptions.push(data.Description3)
+  prod.descriptions.push(data.Description4)
+  prod.descriptions.push(data.Description5)
 
   // convert and sanitize
   prod.descriptions.forEach((desc, index) => {
@@ -50,8 +61,11 @@ const getProduct = async () => {
 
 const setDescription = async () => {
   const product = await getProduct()
-  const desc1 = document.getElementById('description1')
-  desc1.innerHTML = product.descriptions[0]
+  product.descriptions.forEach((desc, index) => {
+    document.getElementById(`description${index+1}`).innerHTML = desc
+  })
+  document.getElementById('description2Mobile').innerHTML = product.descriptions[1]
+  document.getElementById('description4Mobile').innerHTML = product.descriptions[3]
 }
 
 setDescription()
